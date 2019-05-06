@@ -1,5 +1,4 @@
 import React from "react";
-import classnames from "classnames";
 import * as weatherServices from "./WeatherServices";
 import moment from "moment";
 import "./index.css";
@@ -13,7 +12,9 @@ class Weather extends React.Component {
     sixHourInterval: [],
     arr: [],
     notFound: false,
-    city: []
+    city: [],
+    fahrenheit: true,
+    barGraph: true
   };
   onChange = e => {
     this.setState({
@@ -22,24 +23,23 @@ class Weather extends React.Component {
   };
   getForecast = async e => {
     e.preventDefault();
+
+    let units;
+    this.state.fahrenheit ? (units = "imperial") : (units = "metric");
     await this.setState({ notFound: false });
     try {
-      let response = await weatherServices.forecast(
-        this.state.zip,
-        this.state.unit
-      );
-      //   let city = await weatherServices.findCity(this.state.zip);
-      //   console.log(city);
+      let response = await weatherServices.forecast(this.state.zip, units);
+
       let sixHourInterval = [];
-      for (let i = 0; i < response.data.list.length; i++) {
+      for (let i = 0; i < response.data.forecastInfo.list.length; i++) {
         if (
           !sixHourInterval.includes(
-            moment(response.data.list[i].dt_txt).format("dddd")
+            moment(response.data.forecastInfo.list[i].dt_txt).format("dddd")
           )
         ) {
           sixHourInterval.push(
-            response.data.list[i],
-            moment(response.data.list[i].dt_txt).format("dddd")
+            response.data.forecastInfo.list[i],
+            moment(response.data.forecastInfo.list[i].dt_txt).format("dddd")
           );
         }
       }
@@ -49,21 +49,24 @@ class Weather extends React.Component {
           arr.push({
             temp: item.main.temp,
             humidity: item.main.humidity,
-            time: moment(item.dt_txt).format("lll")
+            time: moment(item.dt_txt).format("lll"),
+            fahrenheit: this.state.fahrenheit,
+            barGraph: this.state.barGraph
           });
         }
       });
-      //   let town = city.data;
-      //   let cities = this.state.city.concat(town);
+      let town = response.data.forecastInfo.city.name;
+      let cities = this.state.city.concat(town);
       let newArr = this.state.arr.concat({ arr });
       await this.setState({
         displayGraph: true,
         sixHourInterval: arr,
         arr: newArr,
-        zip: ""
-        // city: cities
+        zip: "",
+        city: cities
       });
     } catch (err) {
+      console.log(err);
       this.setState({
         displayGraph: false,
         notFound: true,
@@ -87,6 +90,8 @@ class Weather extends React.Component {
           index={i}
           delete={id => this.deleteGraph(id)}
           city={this.state.city[i]}
+          units={Object.values(item)[0][0].fahrenheit}
+          graph={Object.values(item)[0][0].barGraph}
         />
       );
     });
@@ -95,7 +100,7 @@ class Weather extends React.Component {
   render() {
     return (
       <div
-        className=" weatherForecast  "
+        className=" weatherForecast  container"
         style={{ display: "flex", flexDirection: "column" }}
       >
         <h1
@@ -120,6 +125,70 @@ class Weather extends React.Component {
         </h4>
         <div className="  text-center weatherFadeInUp" style={gameRules}>
           <h1> Enter in the 5 digit zip code for any area you'd like to see</h1>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            marginBottom: "3%",
+            marginTop: "3%"
+          }}
+        >
+          <div className="form-check" style={{ alignSelf: "center" }}>
+            <input
+              className="form-check-input"
+              type="radio"
+              checked={this.state.fahrenheit}
+              onChange={() => this.setState({ fahrenheit: true })}
+            />
+            <label className="form-check-label" style={{ color: "white" }}>
+              Fahrenheit
+            </label>
+          </div>
+          <div className="form-check" style={{ alignSelf: "center" }}>
+            <input
+              className="form-check-input"
+              type="radio"
+              checked={!this.state.fahrenheit}
+              onChange={() => this.setState({ fahrenheit: false })}
+            />
+            <label className="form-check-label" style={{ color: "white" }}>
+              Celsius
+            </label>
+          </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            marginBottom: "3%",
+            marginTop: "3%"
+          }}
+        >
+          <div className="form-check" style={{ alignSelf: "center" }}>
+            <input
+              className="form-check-input"
+              type="radio"
+              checked={this.state.barGraph}
+              onChange={() => this.setState({ barGraph: true })}
+            />
+            <label className="form-check-label" style={{ color: "white" }}>
+              Bar Graph
+            </label>
+          </div>
+          <div className="form-check" style={{ alignSelf: "center" }}>
+            <input
+              className="form-check-input"
+              type="radio"
+              checked={!this.state.barGraph}
+              onChange={() => this.setState({ barGraph: false })}
+            />
+            <label className="form-check-label" style={{ color: "white" }}>
+              Horizontal Bar Graph
+            </label>
+          </div>
         </div>
         <div style={{ alignSelf: "center" }} className="weatherFadeInUp col-6">
           <form onSubmit={this.getForecast}>
@@ -150,7 +219,15 @@ class Weather extends React.Component {
           <br />
           <br />
         </div>
-        <div className="col-12" style={{ alignSelf: "center" }}>
+        <div
+          className="col-12 container"
+          style={{
+            alignSelf: "center",
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap"
+          }}
+        >
           {this.state.displayGraph ? this.renderForecast() : null}
           {this.state.notFound && <InvalidZip />}
         </div>

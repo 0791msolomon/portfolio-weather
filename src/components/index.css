@@ -27,6 +27,9 @@
   color: "white";
   font-weight: bold;
 }
+.btn:focus {
+  outline: none;
+}
 .navbarHeader {
   font-weight: bold;
 

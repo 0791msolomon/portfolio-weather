@@ -1,5 +1,5 @@
 import React from "react";
-import { Bar } from "react-chartjs-2/es";
+import { Bar, HorizontalBar } from "react-chartjs-2/es";
 import moment from "moment";
 import "../index.css";
 const ThreeDayForecast = props => {
@@ -47,28 +47,54 @@ const ThreeDayForecast = props => {
 
   return (
     <div
-      className="weatherFadeInUp2 "
-      style={{ border: "solid 3px white", padding: "3%", marginTop: "2%" }}
+      className="weatherFadeInUp2 col-lg-5 col-sm-12"
+      style={{
+        border: "solid 3px white",
+        padding: "3%",
+        margin: "2%"
+      }}
     >
       <div>
-        <Bar
-          data={tempData}
-          width={500}
-          height={200}
-          options={{
-            maintainAspectRatio: false
-          }}
-        />
+        {props.graph ? (
+          <Bar
+            data={tempData}
+            width={500}
+            height={200}
+            options={{
+              maintainAspectRatio: false
+            }}
+          />
+        ) : (
+          <HorizontalBar
+            data={tempData}
+            width={500}
+            height={200}
+            options={{
+              maintainAspectRatio: false
+            }}
+          />
+        )}
       </div>
       <div>
-        <Bar
-          data={humidityData}
-          width={500}
-          height={200}
-          options={{
-            maintainAspectRatio: false
-          }}
-        />
+        {props.graph ? (
+          <Bar
+            data={humidityData}
+            width={500}
+            height={200}
+            options={{
+              maintainAspectRatio: false
+            }}
+          />
+        ) : (
+          <HorizontalBar
+            data={humidityData}
+            width={500}
+            height={200}
+            options={{
+              maintainAspectRatio: false
+            }}
+          />
+        )}
       </div>
       <div
         style={{
@@ -79,17 +105,27 @@ const ThreeDayForecast = props => {
           fontWeight: "bold"
         }}
       >
-        <h4 style={{ alignSelf: "center" }}>{props.city}</h4>
-        <h4
-          style={{ alignSelf: "center" }}
+        <h6
+          style={{
+            alignSelf: "center",
+            alignContent: "center",
+            alignItems: "center"
+          }}
+        >
+          {props.city}
+        </h6>
+        <h6
+          style={{
+            textAlign: "center"
+          }}
         >{`The average temperature over the next 5 days is ${avgTemp.toFixed(
           1
-        )} degrees`}</h4>
-        <h4
-          style={{ alignSelf: "center" }}
+        )} degrees ${props.units ? "Fahrenheit" : "Celsius"}`}</h6>
+        <h6
+          style={{ textAlign: "center" }}
         >{`The average humidity percentage over the next 5 days is ${avgHumidity.toFixed(
           1
-        )}%`}</h4>
+        )}%`}</h6>
         <button
           className="form-control btn-danger"
           onClick={() => props.delete(props.index)}
