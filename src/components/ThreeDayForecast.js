@@ -44,21 +44,21 @@ const ThreeDayForecast = props => {
   let totalHumidity = humidity.reduce((acc, item) => (acc += item), 0);
   let avgHumidity = totalHumidity / humidity.length;
   let avgTemp = totalTemp / degrees.length;
-
+  console.log(props);
   return (
     <div
-      className="weatherFadeInUp2 col-lg-5 col-sm-12"
+      className="weatherFadeInUp2 col-lg-3 col-sm-12"
       style={{
         border: "solid 3px white",
-        padding: "3%",
-        margin: "2%"
+        padding: "1%",
+        margin: "1%"
       }}
     >
       <div>
         {props.graph ? (
           <Bar
             data={tempData}
-            width={500}
+            width={450}
             height={200}
             options={{
               maintainAspectRatio: false
@@ -126,13 +126,15 @@ const ThreeDayForecast = props => {
         >{`The average humidity percentage over the next 5 days is ${avgHumidity.toFixed(
           1
         )}%`}</h6>
-        <button
-          className="form-control btn-danger"
-          onClick={() => props.delete(props.index)}
-          style={{ fontFamily: "monospace", fontWeight: "bold" }}
-        >
-          REMOVE
-        </button>
+        {props.delete && (
+          <button
+            className="form-control btn-danger"
+            onClick={() => props.delete(props.index)}
+            style={{ fontFamily: "monospace", fontWeight: "bold" }}
+          >
+            REMOVE
+          </button>
+        )}
       </div>
     </div>
   );

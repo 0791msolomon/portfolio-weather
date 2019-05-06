@@ -64,19 +64,60 @@
   animation: zoomIn 1s;
   animation-iteration-count: 1;
 }
+.overFlowItem{
+  opacity: .4;
+}
+.overFlowItem:hover{
+  opacity: 1;
+  cursor: pointer;
+}
+.overFlow:focus {
+  outline: none;
+   
+}
+ .overFlow{
+   opacity: .5;
+ }
+
+.overFlow:hover {
+  opacity: 1;
+  cursor: pointer;
+  color: red;
+  border: solid 2px red;
+}
+.overFlow:active, .active {
+ opacity: 1;
+ color: red;
+ border: solid 2px red;
+}
 .correctCount {
   -webkit-animation: lightSpeedIn 1s;
   animation: lightSpeedIn 1s;
   animation-iteration-count: 1;
 }
 .weatherDisplayFallDown {
-  -webkit-animation: fadeInDown 1s;
-  animation: fadeInDown 1s;
+  -webkit-animation: fadeInDownBig 3s;
+  animation: fadeInDownBig 3s;
   animation-iteration-count: 1;
 }
 .weatherFadeInUp {
-  -webkit-animation: fadeInUp 1s;
-  animation: fadeInUp 1s;
+  -webkit-animation: fadeInUpBig 3s;
+  animation: fadeInUpBig 3s;
+  animation-iteration-count: 1;
+}
+.fadeUp {
+  -webkit-animation: fadeInUpBig 2s;
+  animation: fadeInUpBig 2s;
+  animation-iteration-count: 1;
+}
+.fadeInRight {
+  -webkit-animation: fadeInLeftBig 4s;
+  animation: fadeInLeftBig 4s;
+  animation-iteration-count: 1;
+}
+.fadeInLeft {
+  -webkit-animation: fadeInRightBig 4s;
+  animation: fadeInRightBig 4s;
   animation-iteration-count: 1;
 }
 .weatherFadeInUp2 {
@@ -107,21 +148,14 @@
   animation: flash 4s;
   animation-iteration-count: infinite;
 }
-.shit {
-  border-radius: 20% 20%;
-  border: solid 2px white;
-  padding: 10%;
-  margin: 5%;
-  color: white;
-  transition: 1s;
+.overFlow {
+  border-radius: 10% 10%;
+   transition: 1s;
   display: "flex";
+  font-weight: bold;
+  margin: 1%
 }
 
-.shit:hover {
-  cursor: pointer;
-  color: lime;
-  border: solid 2px lime;
-}
 .techDisplay:hover {
   -webkit-animation: heartBeat 1s;
   animation: heartBeat 1s;

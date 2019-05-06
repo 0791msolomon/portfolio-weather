@@ -4,6 +4,8 @@ import moment from "moment";
 import "./index.css";
 import ThreeDayForecast from "./ThreeDayForecast";
 import InvalidZip from "./InvalidZip";
+import classnames from "classnames";
+import CityButton from "./CityButton";
 class Weather extends React.Component {
   state = {
     zip: "",
@@ -11,10 +13,14 @@ class Weather extends React.Component {
     displayGraph: false,
     sixHourInterval: [],
     arr: [],
+    overFlow: [],
     notFound: false,
     city: [],
     fahrenheit: true,
-    barGraph: true
+    barGraph: true,
+    searching: false,
+    activeCount: [],
+    modal: false
   };
   onChange = e => {
     this.setState({
@@ -23,7 +29,7 @@ class Weather extends React.Component {
   };
   getForecast = async e => {
     e.preventDefault();
-
+    await this.setState({ searching: true });
     let units;
     this.state.fahrenheit ? (units = "imperial") : (units = "metric");
     await this.setState({ notFound: false });
@@ -51,7 +57,8 @@ class Weather extends React.Component {
             humidity: item.main.humidity,
             time: moment(item.dt_txt).format("lll"),
             fahrenheit: this.state.fahrenheit,
-            barGraph: this.state.barGraph
+            barGraph: this.state.barGraph,
+            city: response.data.forecastInfo.city.name
           });
         }
       });
@@ -63,14 +70,16 @@ class Weather extends React.Component {
         sixHourInterval: arr,
         arr: newArr,
         zip: "",
-        city: cities
+        city: cities,
+        searching: false
       });
     } catch (err) {
       console.log(err);
       this.setState({
         displayGraph: false,
         notFound: true,
-        zip: ""
+        zip: "",
+        searching: false
       });
     }
   };
@@ -81,27 +90,64 @@ class Weather extends React.Component {
     let filtered = arr.filter((item, i) => i !== id);
     this.setState({ arr: filtered, city: filteredCities });
   };
+  clearAll = () => {
+    this.setState({
+      arr: [],
+      displayGraph: false,
+      notFound: false,
+      activeCount: []
+    });
+  };
   renderForecast = () => {
     return this.state.arr.map((item, i) => {
-      return (
-        <ThreeDayForecast
-          key={i}
-          info={Object.values(item)[0]}
-          index={i}
-          delete={id => this.deleteGraph(id)}
-          city={this.state.city[i]}
-          units={Object.values(item)[0][0].fahrenheit}
-          graph={Object.values(item)[0][0].barGraph}
-        />
-      );
+      if (i < 3) {
+        return (
+          <ThreeDayForecast
+            key={i}
+            info={Object.values(item)[0]}
+            index={i}
+            delete={id => this.deleteGraph(id)}
+            city={this.state.city[i]}
+            units={Object.values(item)[0][0].fahrenheit}
+            graph={Object.values(item)[0][0].barGraph}
+          />
+        );
+      }
     });
+  };
+  renderOverflow = () => {
+    return this.state.arr.map((item, i) => {
+      if (i > 2) {
+        return (
+          <div className="col-lg-2 col-md-4 col-sm-12 fadeUp " key={i}>
+            <CityButton
+              city={Object.values(item)[0][0].city}
+              activeBtn={(activated, info, index) =>
+                this.activateBtn(activated, info, index)
+              }
+              info={item}
+              index={i}
+            />
+          </div>
+        );
+      }
+    });
+  };
+  activateBtn = async (activated, info, index) => {
+    console.log(info);
+    this.setState({ modal: true });
   };
 
   render() {
     return (
       <div
-        className=" weatherForecast  container"
-        style={{ display: "flex", flexDirection: "column" }}
+        className=" weatherForecast  "
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center"
+        }}
       >
         <h1
           className="display-3 lead weatherDisplayFallDown"
@@ -128,69 +174,88 @@ class Weather extends React.Component {
         </div>
         <div
           style={{
+            margin: "5%",
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            marginBottom: "3%",
-            marginTop: "3%"
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "space-evenly"
           }}
         >
-          <div className="form-check" style={{ alignSelf: "center" }}>
-            <input
-              className="form-check-input"
-              type="radio"
-              checked={this.state.fahrenheit}
-              onChange={() => this.setState({ fahrenheit: true })}
-            />
-            <label className="form-check-label" style={{ color: "white" }}>
-              Fahrenheit
-            </label>
+          <div
+            className="fadeInRight"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center"
+            }}
+          >
+            <h4 style={{ alignSelf: "center", color: "white" }}>
+              Unit Preference:
+            </h4>
+            <div className="form-check" style={{ alignSelf: "center" }}>
+              <input
+                className="form-check-input"
+                type="radio"
+                checked={this.state.fahrenheit}
+                onChange={() => this.setState({ fahrenheit: true })}
+              />
+              <label className="form-check-label" style={{ color: "white" }}>
+                Fahrenheit
+              </label>
+            </div>
+            <div className="form-check" style={{ alignSelf: "center" }}>
+              <input
+                className="form-check-input"
+                type="radio"
+                checked={!this.state.fahrenheit}
+                onChange={() => this.setState({ fahrenheit: false })}
+              />
+              <label className="form-check-label" style={{ color: "white" }}>
+                Celsius
+              </label>
+            </div>
           </div>
-          <div className="form-check" style={{ alignSelf: "center" }}>
-            <input
-              className="form-check-input"
-              type="radio"
-              checked={!this.state.fahrenheit}
-              onChange={() => this.setState({ fahrenheit: false })}
-            />
-            <label className="form-check-label" style={{ color: "white" }}>
-              Celsius
-            </label>
+          <div
+            className="fadeInLeft"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              marginBottom: "3%",
+              marginTop: "3%"
+            }}
+          >
+            <h4 style={{ alignSelf: "center", color: "white" }}>
+              Display Preference:
+            </h4>
+            <div className="form-check" style={{ alignSelf: "center" }}>
+              <input
+                className="form-check-input"
+                type="radio"
+                checked={this.state.barGraph}
+                onChange={() => this.setState({ barGraph: true })}
+              />
+              <label className="form-check-label" style={{ color: "white" }}>
+                Vertical Graph
+              </label>
+            </div>
+            <div className="form-check" style={{ alignSelf: "center" }}>
+              <input
+                className="form-check-input"
+                type="radio"
+                checked={!this.state.barGraph}
+                onChange={() => this.setState({ barGraph: false })}
+              />
+              <label className="form-check-label" style={{ color: "white" }}>
+                Horizontal Graph
+              </label>
+            </div>
           </div>
         </div>
         <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            marginBottom: "3%",
-            marginTop: "3%"
-          }}
+          style={{ alignSelf: "center" }}
+          className="weatherFadeInUp col-lg-6 col-sm-12"
         >
-          <div className="form-check" style={{ alignSelf: "center" }}>
-            <input
-              className="form-check-input"
-              type="radio"
-              checked={this.state.barGraph}
-              onChange={() => this.setState({ barGraph: true })}
-            />
-            <label className="form-check-label" style={{ color: "white" }}>
-              Bar Graph
-            </label>
-          </div>
-          <div className="form-check" style={{ alignSelf: "center" }}>
-            <input
-              className="form-check-input"
-              type="radio"
-              checked={!this.state.barGraph}
-              onChange={() => this.setState({ barGraph: false })}
-            />
-            <label className="form-check-label" style={{ color: "white" }}>
-              Horizontal Bar Graph
-            </label>
-          </div>
-        </div>
-        <div style={{ alignSelf: "center" }} className="weatherFadeInUp col-6">
           <form onSubmit={this.getForecast}>
             <input
               type="number"
@@ -212,29 +277,109 @@ class Weather extends React.Component {
               onClick={this.getForecast}
             >
               <span>
-                Find <i class="fa fa-search" />
+                Find <i className="fa fa-search" />
               </span>
             </button>
           </form>
+          <button
+            style={{ marginTop: "2%" }}
+            className="btn btn-danger form-control  "
+            onClick={this.clearAll}
+          >
+            <span>
+              Clear <i className="fa fa-remove" />
+            </span>
+          </button>
           <br />
           <br />
         </div>
         <div
           className="col-12 container"
           style={{
-            alignSelf: "center",
+            justifyContent: "center",
             display: "flex",
             flexDirection: "row",
             flexWrap: "wrap"
           }}
         >
-          {this.state.displayGraph ? this.renderForecast() : null}
-          {this.state.notFound && <InvalidZip />}
+          {this.state.searching ? (
+            <div
+              style={{ alignSelf: "center" }}
+              className="spinner-border text-danger"
+              role="status"
+            >
+              <span className="sr-only">Loading...</span>
+            </div>
+          ) : this.state.displayGraph && !this.state.searching ? (
+            <div
+              className="col-12"
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                flexWrap: "wrap"
+              }}
+            >
+              {this.renderForecast()}
+            </div>
+          ) : this.state.notFound && !this.state.searching ? (
+            <InvalidZip />
+          ) : (
+            <div
+              className="weatherFadeInUp"
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                marginTop: "5%",
+                textAlign: "center"
+              }}
+            >
+              <h3>No search history</h3>
+            </div>
+          )}
         </div>
+        {this.state.arr.length > 3 && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center"
+            }}
+          >
+            <div
+              className="weatherFadeInUp "
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                justifyContent: "space-around",
+                marginTop: "3%"
+              }}
+            >
+              {this.renderOverflow()}
+            </div>
+            {/* <div
+              className="col-lg-6 col-sm-12"
+              style={{ alignSelf: "center", marginTop: "3%" }}
+            >
+              <button className="form-control btn-info">View Selections</button>
+            </div> */}
+          </div>
+        )}
       </div>
     );
   }
 }
+const overFlow = {
+  border: "solid 1px white",
+  display: "flex",
+  justifyContent: "center",
+  alignContent: "center",
+  alignItems: "center",
+  color: "white",
+  fontWeight: "bold",
+  margin: "1%"
+};
 const popWhite = {
   color: "white",
   fontWeight: "bold"
@@ -246,6 +391,7 @@ const gameRules = {
   color: "white",
   fontWeight: "bold",
   alignSelf: "center",
+  textAlign: "center",
   fontFamily: '"Times New Roman", Times, serif'
 };
 export default Weather;
