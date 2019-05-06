@@ -1,0 +1,205 @@
+.fa-facebook-square {
+  color: #1b5998;
+}
+.fa-linkedin-square {
+  color: #4875b4;
+}
+.fa-github-square {
+  color: lightgrey;
+}
+.weatherForecast {
+  display: flex;
+  flex-direction: column;
+}
+.weatherForecast {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.iconHover:hover {
+  -webkit-animation: heartBeat 1s;
+  animation: heartBeat 1s;
+  color: red;
+  animation-iteration-count: infinite;
+}
+.whiteFont {
+  color: "white";
+  font-weight: bold;
+}
+.navbarHeader {
+  font-weight: bold;
+
+  font-family: Andale Mono, monospace;
+}
+.higherLowerDisplay {
+  -webkit-animation: fadeInDown 1s;
+  animation: fadeInDown 1s;
+  animation-iteration-count: 1;
+}
+.blogsFadeInRight {
+  animation: fadeInDown 1s;
+  animation-iteration-count: 1;
+}
+.higherLowerRollIn {
+  -webkit-animation: fadeInDown 1s;
+  animation: fadeInDown 1s;
+  animation-iteration-count: 1;
+}
+.higherLowerRollIn2 {
+  -webkit-animation: fadeInUp 1s;
+  animation: fadeInUp 1s;
+  animation-iteration-count: 1;
+}
+.buttonFadeUp {
+  -webkit-animation: fadeInUp 2s;
+  animation: fadeInUp 2s;
+  animation-iteration-count: 1;
+}
+.numberBounceIn {
+  -webkit-animation: zoomIn 1s;
+  animation: zoomIn 1s;
+  animation-iteration-count: 1;
+}
+.correctCount {
+  -webkit-animation: lightSpeedIn 1s;
+  animation: lightSpeedIn 1s;
+  animation-iteration-count: 1;
+}
+.weatherDisplayFallDown {
+  -webkit-animation: fadeInDown 1s;
+  animation: fadeInDown 1s;
+  animation-iteration-count: 1;
+}
+.weatherFadeInUp {
+  -webkit-animation: fadeInUp 1s;
+  animation: fadeInUp 1s;
+  animation-iteration-count: 1;
+}
+.weatherFadeInUp2 {
+  -webkit-animation: fadeInUpBig 1s;
+  animation: fadeInUpBig 1s;
+  animation-iteration-count: 1;
+}
+.weatherFadeInUp3 {
+  -webkit-animation: fadeInUp 2s;
+  animation: fadeInUp 2s;
+  animation-iteration-count: 1;
+}
+.weatherFadeInUp4 {
+  -webkit-animation: fadeInUp 3s;
+  animation: fadeInUp 3s;
+  animation-iteration-count: 1;
+}
+
+.triviaDisplay {
+  -webkit-animation: fadeInDown 1s;
+  animation: fadeInDown 1s;
+  animation-iteration-count: 1;
+}
+.blogCard:hover {
+  border: solid 2px white;
+}
+.aboutMePointer {
+  animation: flash 4s;
+  animation-iteration-count: infinite;
+}
+.shit {
+  border-radius: 20% 20%;
+  border: solid 2px white;
+  padding: 10%;
+  margin: 5%;
+  color: white;
+  transition: 1s;
+  display: "flex";
+}
+
+.shit:hover {
+  cursor: pointer;
+  color: lime;
+  border: solid 2px lime;
+}
+.techDisplay:hover {
+  -webkit-animation: heartBeat 1s;
+  animation: heartBeat 1s;
+  color: red;
+  animation-iteration-count: infinite;
+}
+#hover-content {
+  opacity: 0;
+
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+  -o-transition: 0.5s;
+  -ms-transition: 0.5s;
+  transition: 0.5s;
+}
+
+.blogDisplayFallDown {
+  -webkit-animation: fadeInDown 1s;
+  animation: fadeInDown 1s;
+  animation-iteration-count: 1;
+}
+.titleFallDown {
+  -webkit-animation: fadeInDown 1s;
+  animation: fadeInDown 1s;
+  animation-iteration-count: 1;
+}
+.bodyFallUp {
+  -webkit-animation: fadeInUp 1s;
+  animation: fadeInUp 1s;
+  animation-iteration-count: 1;
+}
+.btnFadeUp {
+  -webkit-animation: fadeInUp 2s;
+  animation: fadeInUp 2s;
+  animation-iteration-count: 1;
+}
+.clearbtn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* #frontendParent:hover {
+    -webkit-animation: tada 1s;
+    animation: tada 1s;
+    animation-iteration-count: 1;
+  }
+  #middletierParent:hover {
+    -webkit-animation: tada 1s;
+    animation: tada 1s;
+    animation-iteration-count: 1;
+  }
+  #backendParent:hover {
+    -webkit-animation: tada 1s;
+    animation: tada 1s;
+    animation-iteration-count: 1;
+  }
+  #otherParent:hover {
+    -webkit-animation: tada 1s;
+    animation: tada 1s;
+    animation-iteration-count: 1;
+  } */
+#frontendParent:hover #hover-content {
+  opacity: 1;
+  animation: fadeInLeft 1s;
+}
+#middletierParent:hover #hover-content {
+  opacity: 1;
+  animation: fadeInLeft 1s;
+}
+
+#backendParent:hover #hover-content {
+  opacity: 1;
+  animation: fadeInLeft 1s;
+}
+
+#otherParent:hover #hover-content {
+  opacity: 1;
+  animation: fadeInLeft 1s;
+}
+
+#contactme {
+  background-color: black;
+  color: white;
+  height: 180px;
+}

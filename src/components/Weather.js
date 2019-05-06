@@ -1,10 +1,10 @@
 import React from "react";
 import classnames from "classnames";
-import * as weatherServices from "../services/WeatherServices";
+import * as weatherServices from "./WeatherServices";
 import moment from "moment";
 import "./index.css";
-import ThreeDayForecast from "./charts/ThreeDayForecast";
-import InvalidZip from "./charts/InvalidZip";
+import ThreeDayForecast from "./ThreeDayForecast";
+import InvalidZip from "./InvalidZip";
 class Weather extends React.Component {
   state = {
     zip: "",
@@ -28,8 +28,8 @@ class Weather extends React.Component {
         this.state.zip,
         this.state.unit
       );
-      let city = await weatherServices.findCity(this.state.zip);
-      console.log(city);
+      //   let city = await weatherServices.findCity(this.state.zip);
+      //   console.log(city);
       let sixHourInterval = [];
       for (let i = 0; i < response.data.list.length; i++) {
         if (
@@ -53,15 +53,15 @@ class Weather extends React.Component {
           });
         }
       });
-      let town = city.data;
-      let cities = this.state.city.concat(town);
+      //   let town = city.data;
+      //   let cities = this.state.city.concat(town);
       let newArr = this.state.arr.concat({ arr });
       await this.setState({
         displayGraph: true,
         sixHourInterval: arr,
         arr: newArr,
-        zip: "",
-        city: cities
+        zip: ""
+        // city: cities
       });
     } catch (err) {
       this.setState({
