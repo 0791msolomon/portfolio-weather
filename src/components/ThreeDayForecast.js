@@ -44,7 +44,6 @@ const ThreeDayForecast = props => {
   let totalHumidity = humidity.reduce((acc, item) => (acc += item), 0);
   let avgHumidity = totalHumidity / humidity.length;
   let avgTemp = totalTemp / degrees.length;
-  console.log(props);
   return (
     <div
       className="weatherFadeInUp2 col-lg-3 col-sm-12"

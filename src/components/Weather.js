@@ -2,10 +2,10 @@ import React from "react";
 import * as weatherServices from "./WeatherServices";
 import moment from "moment";
 import "./index.css";
+import { Bar, HorizontalBar } from "react-chartjs-2/es";
 import ThreeDayForecast from "./ThreeDayForecast";
 import InvalidZip from "./InvalidZip";
 import classnames from "classnames";
-import CityButton from "./CityButton";
 class Weather extends React.Component {
   state = {
     zip: "",
@@ -20,7 +20,15 @@ class Weather extends React.Component {
     barGraph: true,
     searching: false,
     activeCount: [],
-    modal: false
+    modalItem: null,
+    barGraph: true,
+    cityName: "",
+    fahrenheit: true,
+    avgHumidity: 0,
+    times: [],
+    degrees: [],
+    avgTemp: 0,
+    humidity: []
   };
   onChange = e => {
     this.setState({
@@ -107,7 +115,7 @@ class Weather extends React.Component {
             info={Object.values(item)[0]}
             index={i}
             delete={id => this.deleteGraph(id)}
-            city={this.state.city[i]}
+            city={Object.values(item)[0][0].city}
             units={Object.values(item)[0][0].fahrenheit}
             graph={Object.values(item)[0][0].barGraph}
           />
@@ -118,27 +126,90 @@ class Weather extends React.Component {
   renderOverflow = () => {
     return this.state.arr.map((item, i) => {
       if (i > 2) {
+        console.log(item);
         return (
-          <div className="col-lg-2 col-md-4 col-sm-12 fadeUp " key={i}>
-            <CityButton
-              city={Object.values(item)[0][0].city}
-              activeBtn={(activated, info, index) =>
-                this.activateBtn(activated, info, index)
-              }
-              info={item}
-              index={i}
-            />
+          <div
+            className="col-lg-2 col-md-4 col-sm-12 fadeUp "
+            key={i}
+            // onClick={() => this.setState({ modalItem: item })}
+            onClick={() => this.adjustModalInfo(item)}
+            data-toggle="modal"
+            data-target="#exampleModalCenter"
+          >
+            <button className="overFlow form-control">
+              {Object.values(item)[0][0].city}
+            </button>
           </div>
         );
       }
     });
   };
-  activateBtn = async (activated, info, index) => {
-    console.log(info);
-    this.setState({ modal: true });
+  adjustModalInfo = item => {
+    let answer = Object.values(item)[0][0];
+    let degrees = [];
+    let humidity = [];
+    let times = [];
+    Object.values(item)[0].map(item => {
+      degrees.push(Math.ceil(item.temp));
+      humidity.push(item.humidity);
+      times.push(moment(item.time).format("dddd"));
+    });
+
+    times.pop();
+    let totalTemp = degrees.reduce((acc, item) => (acc += item), 0);
+    let totalHumidity = humidity.reduce((acc, item) => (acc += item), 0);
+    let avgHumidity = totalHumidity / humidity.length;
+    let avgTemp = totalTemp / degrees.length;
+    this.setState({
+      barGraph: answer.barGraph,
+      cityName: answer.city,
+      fahrenheit: answer.fahrenheit,
+      avgHumidity: avgHumidity.toFixed(1),
+      times,
+      avgTemp: avgTemp.toFixed(1),
+      degrees,
+      humidity
+    });
   };
 
   render() {
+    let {
+      avgHumidity,
+      avgTemp,
+      times,
+      barGraph,
+      degrees,
+      humidity
+    } = this.state;
+    const tempData = {
+      labels: times,
+      datasets: [
+        {
+          label: "Temperature in Farenheit",
+          backgroundColor: "rgba(255,99,132,0.2)",
+          borderColor: "rgba(255,99,132,1)",
+          borderWidth: 1,
+          hoverBackgroundColor: "rgba(255,99,132,0.4)",
+          hoverBorderColor: "rgba(255,99,132,1)",
+          data: degrees
+        }
+      ]
+    };
+    const humidityData = {
+      labels: times,
+      datasets: [
+        {
+          label: "Humidity percentage",
+          backgroundColor: "rgba(198, 198, 198,0.2)",
+          borderColor: "rgba(198, 198, 198,1)",
+          borderWidth: 1,
+          hoverBackgroundColor: "rgba(198, 198, 198,0.4)",
+          hoverBorderColor: "rgba(198, 198, 198,1)",
+          data: humidity
+        }
+      ]
+    };
+
     return (
       <div
         className=" weatherForecast  "
@@ -151,7 +222,11 @@ class Weather extends React.Component {
       >
         <h1
           className="display-3 lead weatherDisplayFallDown"
-          style={{ color: "#0AA7F6", alignSelf: "center" }}
+          style={{
+            color: "red",
+            alignSelf: "center",
+            fontFamily: '"Times New Roman", Times, serif'
+          }}
         >
           Weather Forecast
         </h1>
@@ -172,6 +247,13 @@ class Weather extends React.Component {
         <div className="  text-center weatherFadeInUp" style={gameRules}>
           <h1> Enter in the 5 digit zip code for any area you'd like to see</h1>
         </div>
+        <h4 className="weatherFadeInUp" style={gameRules}>
+          - The first three will be displayed on the screen
+        </h4>
+        <h4 className="weatherFadeInUp" style={gameRules}>
+          - Any following will display as buttons to be selected on the bottom
+          of the screen
+        </h4>
         <div
           style={{
             margin: "5%",
@@ -189,7 +271,7 @@ class Weather extends React.Component {
               justifyContent: "center"
             }}
           >
-            <h4 style={{ alignSelf: "center", color: "white" }}>
+            <h4 style={{ alignSelf: "center", color: "red" }}>
               Unit Preference:
             </h4>
             <div className="form-check" style={{ alignSelf: "center" }}>
@@ -225,7 +307,7 @@ class Weather extends React.Component {
               marginTop: "3%"
             }}
           >
-            <h4 style={{ alignSelf: "center", color: "white" }}>
+            <h4 style={{ alignSelf: "center", color: "red" }}>
               Display Preference:
             </h4>
             <div className="form-check" style={{ alignSelf: "center" }}>
@@ -346,26 +428,123 @@ class Weather extends React.Component {
               justifyContent: "center"
             }}
           >
-            <div
-              className="weatherFadeInUp "
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "space-around",
-                marginTop: "3%"
-              }}
-            >
-              {this.renderOverflow()}
-            </div>
-            {/* <div
-              className="col-lg-6 col-sm-12"
-              style={{ alignSelf: "center", marginTop: "3%" }}
-            >
-              <button className="form-control btn-info">View Selections</button>
-            </div> */}
+            {!this.state.searching && (
+              <div
+                className="weatherFadeInUp "
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  justifyContent: "space-around",
+                  marginTop: "3%"
+                }}
+              >
+                {this.renderOverflow()}
+              </div>
+            )}
           </div>
         )}
+
+        <div
+          class="modal fade  "
+          id="exampleModalCenter"
+          role="dialog"
+          aria-labelledby="exampleModalCenterTitle"
+          aria-hidden="true"
+        >
+          <div
+            class="modal-dialog"
+            role="document"
+            style={{ border: "solid 1px white" }}
+          >
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" style={{ textAlign: "center" }}>
+                  {this.state.cityName.toUpperCase()}
+                </h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div
+                className="modal-body col-12"
+                style={{ backgroundColor: "black" }}
+              >
+                <div
+                  className="weatherFadeInUp2"
+                  style={{
+                    padding: "1%",
+                    margin: "1%"
+                  }}
+                >
+                  {barGraph ? (
+                    <Bar
+                      data={tempData}
+                      width={500}
+                      height={300}
+                      options={{
+                        maintainAspectRatio: true
+                      }}
+                    />
+                  ) : (
+                    <HorizontalBar
+                      data={tempData}
+                      width={500}
+                      height={300}
+                      options={{
+                        maintainAspectRatio: true
+                      }}
+                    />
+                  )}
+                  {barGraph ? (
+                    <Bar
+                      data={humidityData}
+                      width={500}
+                      height={300}
+                      options={{
+                        maintainAspectRatio: true
+                      }}
+                    />
+                  ) : (
+                    <HorizontalBar
+                      data={humidityData}
+                      width={500}
+                      height={300}
+                      options={{
+                        maintainAspectRatio: true
+                      }}
+                    />
+                  )}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      color: "white",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    <h6
+                      style={{
+                        textAlign: "center"
+                      }}
+                    >{`The average temperature over the next 5 days is ${avgTemp} degrees ${
+                      this.state.fahrenheit ? "Fahrenheit" : "Celsius"
+                    }`}</h6>
+                    <h6
+                      style={{ textAlign: "center" }}
+                    >{`The average humidity percentage over the next 5 days is ${avgHumidity}%`}</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

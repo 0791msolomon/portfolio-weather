@@ -77,6 +77,7 @@
 }
  .overFlow{
    opacity: .5;
+   color: black
  }
 
 .overFlow:hover {
